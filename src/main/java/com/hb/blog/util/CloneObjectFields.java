@@ -1,8 +1,5 @@
 package com.hb.blog.util;
 
-import com.hb.blog.dto.UserDTO;
-import com.hb.blog.model.User;
-
 import java.lang.reflect.Field;
 
 public class CloneObjectFields {
@@ -16,7 +13,6 @@ public class CloneObjectFields {
                     field.set(target, value);
                 }
             }
-
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

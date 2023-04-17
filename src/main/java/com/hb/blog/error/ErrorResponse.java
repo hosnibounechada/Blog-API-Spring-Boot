@@ -1,13 +1,16 @@
 package com.hb.blog.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 
 public class ErrorResponse {
     private String message;
+    @JsonProperty("status_code")
     private HttpStatusCode statusCode;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("problem_detail")
     private ProblemDetail body;
 
     public ErrorResponse(String message) {

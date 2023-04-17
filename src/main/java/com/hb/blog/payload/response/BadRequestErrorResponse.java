@@ -1,5 +1,6 @@
 package com.hb.blog.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hb.blog.error.ErrorModel;
 import com.hb.blog.error.ErrorResponse;
 import org.springframework.http.HttpStatusCode;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 import java.util.List;
 
 public class BadRequestErrorResponse extends ErrorResponse {
+    @JsonProperty("error_type")
     private String errorType;
     private List<ErrorModel> errors;
 

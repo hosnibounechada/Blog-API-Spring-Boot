@@ -1,20 +1,27 @@
 package com.hb.blog.service;
 
-import com.hb.blog.dto.UserDTO;
-import com.hb.blog.exception.ConflictException;
-import com.hb.blog.exception.NotFoundException;
-import com.hb.blog.exception.ResourceAlreadyExistsException;
-import com.hb.blog.mapper.UserMapper;
-import com.hb.blog.model.User;
-import com.hb.blog.payload.request.RegisterRequest;
-import com.hb.blog.repository.UserRepository;
-import com.hb.blog.util.UpdateUser;
-import com.hb.blog.validator.ObjectValidator;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.hb.blog.exception.GoneException;
+import com.hb.blog.payload.response.user.UserResponse;
+import com.hb.blog.payload.response.user.UsersResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.hb.blog.exception.ConflictException;
+import com.hb.blog.exception.NotFoundException;
+import com.hb.blog.mapper.UserMapper;
+import com.hb.blog.model.User;
+import com.hb.blog.payload.request.user.RegisterRequest;
+import com.hb.blog.payload.request.user.UpdateUserRequest;
+import com.hb.blog.repository.UserRepository;
+import com.hb.blog.util.UpdateUser;
+import com.hb.blog.validator.ObjectValidator;
+
 
 @Service
 public class UserService {
@@ -28,19 +35,23 @@ public class UserService {
         this.validator = validator;
     }
 
-    public List<UserDTO> findAll() {
+    public UsersResponse findAll() {
         List<User> users = userRepository.findAll();
 
-        return users.stream().map(user -> userMapper.fromUserToUserDTO(user)).collect(Collectors.toList());
+        List<UserResponse> usersList = users.stream().map(userMapper::fromUserToUserResponse).collect(Collectors.toList());
+
+        int count = usersList.size();
+
+        return new UsersResponse(0,count, count > 0 ? 1 : 0, count, usersList);
     }
 
-    public UserDTO findById(Long id) {
+    public UserResponse findById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
 
-        return userMapper.fromUserToUserDTO(user);
+        return userMapper.fromUserToUserResponse(user);
     }
 
-    public UserDTO create(RegisterRequest registerRequest) {
+    public UserResponse create(RegisterRequest registerRequest) {
         validator.validate(registerRequest);
 
         /*if (userRepository.existsByEmail(registerRequest.getEmail()))
@@ -48,21 +59,25 @@ public class UserService {
 
         User user = userMapper.fromRegisterRequestToUser(registerRequest);
 
-        return userMapper.fromUserToUserDTO(userRepository.save(user));
+        return userMapper.fromUserToUserResponse(userRepository.save(user));
     }
 
-    public UserDTO update(Long id, UserDTO userDTO) {
+    public UserResponse update(Long id, UpdateUserRequest updateUserRequest) {
         Optional<User> existedUser = userRepository.findById(id);
 
-        if (!existedUser.isPresent()) throw new NotFoundException("User not found!");
+        if (existedUser.isEmpty()) throw new NotFoundException("User not found!");
 
         User updatedUser = existedUser.get();
 
-        UpdateUser.updateUserFields(userDTO, updatedUser);
+        UpdateUser.updateUserFields(updateUserRequest, updatedUser);
+//        CloneObjectFields.cloneNonNullProperties(userDTO, updatedUser);
 
-        return userMapper.fromUserToUserDTO(userRepository.save(updatedUser));
+        return userMapper.fromUserToUserResponse(userRepository.save(updatedUser));
     }
 
+    /**
+     * @deprecated (when, issue a request to check existing record before delete, refactoring advice...)
+     */
     @Deprecated
     public boolean deleteUserById(Long id) {
         if (!userRepository.existsById(id)) throw new NotFoundException("User already deleted!");
@@ -73,11 +88,19 @@ public class UserService {
         return true;
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         int count = userRepository.deleteUserById(id);
 
-        if (count != 1) throw new NotFoundException("User already deleted!");
+        if (count != 1) throw new GoneException("User already deleted!");
+    }
 
-        return true;
+    public UsersResponse getUsers(int pageNumber, int pageSize){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<User> pageUsers = userRepository.findAll(pageable);
+
+        List<UserResponse> users = pageUsers.stream().map(userMapper::fromUserToUserResponse).collect(Collectors.toList());
+
+        return new UsersResponse(pageUsers.getNumber(),users.size(), pageUsers.getTotalPages(), (int) pageUsers.getTotalElements(), users);
     }
 }

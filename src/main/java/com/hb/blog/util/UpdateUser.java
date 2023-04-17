@@ -1,12 +1,12 @@
 package com.hb.blog.util;
 
-import com.hb.blog.dto.UserDTO;
 import com.hb.blog.model.User;
+import com.hb.blog.payload.request.user.UpdateUserRequest;
 
 public class UpdateUser {
-    public static void updateUserFields(UserDTO userDTO, User user){
-        if(userDTO.getFirstName() != null) user.setFirstName(userDTO.getFirstName());
-        if(userDTO.getLastName() != null) user.setLastName(userDTO.getLastName());
-        if(userDTO.getAge() != null) user.setAge(userDTO.getAge());
+    public static void updateUserFields(UpdateUserRequest updateUserRequest, User user){
+        if(updateUserRequest.firstName() != null) user.setFirstName(updateUserRequest.firstName());
+        if(updateUserRequest.lastName() != null) user.setLastName(updateUserRequest.lastName());
+        if(updateUserRequest.age() != null) user.setAge(updateUserRequest.age());
     }
 }
