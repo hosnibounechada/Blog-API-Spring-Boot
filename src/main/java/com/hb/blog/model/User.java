@@ -3,6 +3,7 @@ package com.hb.blog.model;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity(name = "User")
 @Table(
@@ -61,6 +62,14 @@ public class User {
             length = 128
     )
     private String password;
+
+    @OneToMany(
+            mappedBy = "user",
+            orphanRemoval = true,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    private Set<Post> posts;
 
     public User() {
     }

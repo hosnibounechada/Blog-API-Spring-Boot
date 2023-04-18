@@ -8,9 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    /*@Mapping(target = "fullName", expression = "java(user.getFirstName() + \" \" + user.getLastName())")
-    UserDTO fromUserToUserDTO(User user);
-    User fromUserDTOToUser(UserDTO userDTO);*/
     User fromRegisterRequestToUser(RegisterRequest registerRequest);
     @Mapping(target = "fullName", expression = "java(user.getFirstName() + \" \" + user.getLastName())")
     UserResponse fromUserToUserResponse(User user);
