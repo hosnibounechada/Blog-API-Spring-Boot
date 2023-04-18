@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
-    /*@Modifying
-    @Transactional
-    @Query(value = "delete from users where id = :id", nativeQuery = true)*/
     @Modifying
     @Transactional
     @Query(value = "delete from Post p where p.id = :id")

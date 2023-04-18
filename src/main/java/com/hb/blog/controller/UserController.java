@@ -1,6 +1,6 @@
 package com.hb.blog.controller;
 
-import com.hb.blog.payload.request.user.RegisterRequest;
+import com.hb.blog.payload.request.user.CreateUserRequest;
 import com.hb.blog.payload.request.user.UpdateUserRequest;
 import com.hb.blog.payload.response.user.UserResponse;
 import com.hb.blog.payload.response.user.PageResponse;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController implements IController<Long, RegisterRequest, UpdateUserRequest, UserResponse> {
+public class UserController implements IController<Long, CreateUserRequest, UpdateUserRequest, UserResponse> {
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -43,7 +43,7 @@ public class UserController implements IController<Long, RegisterRequest, Update
 
     @Override
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<UserResponse> create(@RequestBody @Valid CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 

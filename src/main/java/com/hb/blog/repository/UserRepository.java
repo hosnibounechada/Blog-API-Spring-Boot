@@ -10,11 +10,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-    Boolean existsByEmail(String email);
-    /*@Modifying
-    @Transactional
-    @Query(value = "delete from users where id = :id", nativeQuery = true)*/
     @Modifying
     @Transactional
     @Query(value = "delete from User u where u.id = :id")

@@ -6,7 +6,6 @@ import com.hb.blog.payload.response.post.PostResponse;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface PostMapper {
-    Post fromCreateRequestToPost(CreatePostRequest createRequest);
-    PostResponse fromPostToPostResponse(Post post);
+public interface PostMapper extends GenericMapper<Post, CreatePostRequest, PostResponse>{
+
 }

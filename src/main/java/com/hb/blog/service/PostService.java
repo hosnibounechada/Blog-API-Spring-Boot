@@ -4,7 +4,6 @@ import com.hb.blog.exception.ConflictException;
 import com.hb.blog.exception.GoneException;
 import com.hb.blog.exception.NotFoundException;
 import com.hb.blog.mapper.PostMapper;
-import com.hb.blog.mapper.PostMapperGeneric;
 import com.hb.blog.model.Post;
 import com.hb.blog.model.User;
 import com.hb.blog.payload.request.post.CreatePostRequest;
@@ -30,38 +29,38 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    private final PostMapperGeneric postMapperGeneric;
 
-    public PostService(UserRepository userRepository, PostRepository postRepository, PostMapper postMapper, PostMapperGeneric postMapperGeneric) {
+    public PostService(UserRepository userRepository, PostRepository postRepository, PostMapper postMapper) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.postMapper = postMapper;
-        this.postMapperGeneric = postMapperGeneric;
     }
 
     @Override
     public PageResponse<PostResponse> getAll() {
         List<Post> users = postRepository.findAll();
 
-        List<PostResponse> postsList = users.stream().map(postMapper::fromPostToPostResponse).collect(Collectors.toList());
+        List<PostResponse> postsList = users.stream().map(postMapper::entityToResponse).collect(Collectors.toList());
 
         int count = postsList.size();
 
         return new PageResponse<>(0, count, count > 0 ? 1 : 0, count, postsList);
     }
+
     @Override
     public PageResponse<PostResponse> getByPages(int pageNumber, int pageSize, String sortBy, String direction) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
         Page<Post> pageUsers = postRepository.findAll(pageable);
 
-        return Pagination.generateResponse(pageUsers, postMapperGeneric);
+        return Pagination.generateResponse(pageUsers, postMapper);
     }
+
     @Override
     public PostResponse getById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
 
-        return postMapper.fromPostToPostResponse(post);
+        return postMapper.entityToResponse(post);
     }
 
     @Override
@@ -70,8 +69,9 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
 
         Post post = new Post(request.content(), user);
 
-        return postMapper.fromPostToPostResponse(postRepository.save(post));
+        return postMapper.entityToResponse(postRepository.save(post));
     }
+
     @Override
     public PostResponse update(Long id, UpdatePostRequest request) {
         Optional<Post> existedPost = postRepository.findById(id);
@@ -82,7 +82,7 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
 
         UpdateObject.updatePostFields(request, updatedPost);
 
-        return postMapper.fromPostToPostResponse(postRepository.save(updatedPost));
+        return postMapper.entityToResponse(postRepository.save(updatedPost));
     }
 
     @Deprecated
@@ -95,6 +95,7 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
         if (userRepository.existsById(id)) throw new ConflictException("Couldn't delete post!");
         return true;
     }
+
     @Override
     public void delete(Long id) {
         int count = postRepository.deletePostById(id);

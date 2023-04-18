@@ -8,20 +8,17 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
 
-@Component
 public class ObjectValidator {
-    private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    private final Validator validator = factory.getValidator();
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final Validator validator = factory.getValidator();
 
-    public <T> void validate(T object) {
+    public static <T> void validate(T object) {
 
         Set<ConstraintViolation<T>> validations = validator.validate(object);
 

@@ -1,9 +1,5 @@
 package com.hb.blog.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.hb.blog.constant.DatabaseErrorCode;
 import com.hb.blog.error.ErrorModel;
 import com.hb.blog.error.ErrorResponse;
@@ -27,7 +23,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
-import static com.hb.blog.util.Converter.objectFromCamelCaseToSnakeCase;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -63,7 +58,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public BadRequestErrorResponse handleException(MethodArgumentNotValidException e) throws JsonProcessingException {
+    public BadRequestErrorResponse handleException(MethodArgumentNotValidException e) {
         List<ErrorModel> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()

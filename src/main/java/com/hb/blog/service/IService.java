@@ -1,7 +1,5 @@
 package com.hb.blog.service;
 
-import com.hb.blog.payload.request.user.RegisterRequest;
-import com.hb.blog.payload.request.user.UpdateUserRequest;
 import com.hb.blog.payload.response.user.PageResponse;
 
 public interface IService<ID, CREATE, UPDATE, RESPONSE> {
