@@ -102,6 +102,11 @@ public class GlobalExceptionHandler {
                         .status(HttpStatus.SERVICE_UNAVAILABLE)
                         .body(new ErrorResponse("Service in temporary unavailable", HttpStatus.SERVICE_UNAVAILABLE));
             }
+            case DatabaseErrorCode.CONSTRAINTS_VIOLATION -> {
+                return ResponseEntity
+                        .status(HttpStatus.LOCKED)
+                        .body(new ErrorResponse("Constraint violation", HttpStatus.LOCKED));
+            }
             default -> {
                 // Unknown error
                 return ResponseEntity

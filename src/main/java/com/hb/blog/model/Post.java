@@ -30,13 +30,17 @@ public class Post {
             columnDefinition = "TEXT"
     )
     private String content;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "user_post_fk"))
+            foreignKey = @ForeignKey(name = "user_post_fkey"))
     private User user;
 
     public Post() {
+    }
+
+    public Post(String content) {
+        this.content = content;
     }
 
     public Post(String content, User user) {

@@ -1,0 +1,3 @@
+1- cascade delete on post. (Done)
+2- get all posts with their users.
+3- insert multiple posts to the same user.

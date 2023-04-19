@@ -87,13 +87,12 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
 
     @Deprecated
     @Override
-    public boolean deleteById(Long id) {
-        if (!userRepository.existsById(id)) throw new NotFoundException("Post already deleted!");
+    public void deleteById(Long id) {
+        if (!postRepository.existsById(id)) throw new NotFoundException("Post already deleted!");
 
-        userRepository.deleteById(id);
+        postRepository.deleteById(id);
 
-        if (userRepository.existsById(id)) throw new ConflictException("Couldn't delete post!");
-        return true;
+        if (postRepository.existsById(id)) throw new ConflictException("Couldn't delete post!");
     }
 
     @Override

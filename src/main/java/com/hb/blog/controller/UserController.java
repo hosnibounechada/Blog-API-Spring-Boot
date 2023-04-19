@@ -56,7 +56,8 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
     @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.delete(id);
+//        userService.delete(id);
+        userService.deleteById(id);
 
         return ResponseEntity.noContent().build();
     }

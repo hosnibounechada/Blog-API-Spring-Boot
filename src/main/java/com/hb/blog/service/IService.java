@@ -8,6 +8,6 @@ public interface IService<ID, CREATE, UPDATE, RESPONSE> {
     RESPONSE getById(ID id);
     RESPONSE create(CREATE request);
     RESPONSE update(ID id, UPDATE request);
-    boolean deleteById(ID id);
+    void deleteById(ID id);
     void delete(ID id);
 }

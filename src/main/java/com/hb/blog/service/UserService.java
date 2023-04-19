@@ -82,13 +82,12 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
      */
     @Deprecated
     @Override
-    public boolean deleteById(Long id) {
+    public void deleteById(Long id) {
         if (!userRepository.existsById(id)) throw new NotFoundException("User already deleted!");
 
         userRepository.deleteById(id);
 
         if (userRepository.existsById(id)) throw new ConflictException("Couldn't delete user!");
-        return true;
     }
     @Override
     public void delete(Long id) {

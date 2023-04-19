@@ -91,6 +91,16 @@ public class User {
         this.password = password;
     }
 
+    public User(Long id, String firstName, String lastName, Integer age, String email, String password, Set<Post> posts) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
+        this.password = password;
+        this.posts = posts;
+    }
+
     public Long getId() {
         return id;
     }
