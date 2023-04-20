@@ -22,4 +22,18 @@ public record CreateUserRequest(@JsonProperty("first_name")
                                 @Size(min = 6, max = 128)
                                 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
                                 String password) {
+    @Override
+    public String firstName() {
+        return firstName.toLowerCase();
+    }
+
+    @Override
+    public String lastName() {
+        return lastName.toLowerCase();
+    }
+
+    @Override
+    public String email() {
+        return email.toLowerCase();
+    }
 }

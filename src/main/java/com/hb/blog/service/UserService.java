@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.hb.blog.annotation.CustomAnnotation;
 import com.hb.blog.exception.GoneException;
 import com.hb.blog.mapper.UserMapper;
 import com.hb.blog.payload.response.user.UserResponse;
 import com.hb.blog.payload.response.user.PageResponse;
 import com.hb.blog.util.Pagination;
+import com.hb.blog.view.UserView;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +53,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
         return Pagination.generateResponse(pageUsers, userMapper);
     }
     @Override
+    @CustomAnnotation
     public UserResponse getById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
 
@@ -94,5 +97,9 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
         int count = userRepository.deleteUserById(id);
 
         if (count != 1) throw new GoneException("User already deleted!");
+    }
+
+    public List<UserView> search(String firstName, String lastName){
+        return userRepository.getUserByFirstNameOrLastName(firstName, lastName);
     }
 }

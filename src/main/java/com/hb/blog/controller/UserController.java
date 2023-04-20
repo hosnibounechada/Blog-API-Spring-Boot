@@ -1,14 +1,20 @@
 package com.hb.blog.controller;
 
+import com.hb.blog.annotation.CustomRequestParam;
 import com.hb.blog.payload.request.user.CreateUserRequest;
 import com.hb.blog.payload.request.user.UpdateUserRequest;
 import com.hb.blog.payload.response.user.UserResponse;
 import com.hb.blog.payload.response.user.PageResponse;
 import com.hb.blog.service.UserService;
+import com.hb.blog.util.StringLowerCaseEditor;
+import com.hb.blog.view.UserView;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -19,6 +25,17 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
         this.userService = userService;
     }
 
+    /**
+     * Convert all QueryParams to lower case
+     * @return String
+     */
+    /* @InitBinder
+    public void initBinder( WebDataBinder dataBinder )
+    {
+        StringLowerCaseEditor lowerCaseEditor = new StringLowerCaseEditor();
+        dataBinder.registerCustomEditor( String.class, lowerCaseEditor );
+    }*/
+
     @Override
     @GetMapping("/all")
     public ResponseEntity<PageResponse<UserResponse>> getAll() {
@@ -26,12 +43,13 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
 
         return ResponseEntity.ok(pageResponse);
     }
+
     @Override
     @GetMapping
     public ResponseEntity<PageResponse<UserResponse>> getByPages(@RequestParam(defaultValue = "0") int page,
-                                                    @RequestParam(defaultValue = "10") int size,
-                                                    @RequestParam(defaultValue = "id") String sortBy,
-                                                    @RequestParam(defaultValue = "asc") String direction) {
+                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                 @RequestParam(defaultValue = "id") String sortBy,
+                                                                 @RequestParam(defaultValue = "asc") String direction) {
         return ResponseEntity.ok(userService.getByPages(page, size, sortBy, direction));
     }
 
@@ -60,5 +78,18 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
         userService.deleteById(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserView>> search(@RequestParam(defaultValue = "") String firstName,
+                                               @RequestParam(defaultValue = "") String lastName, String res) {
+        System.out.println("========================================");
+        System.out.println("|                                       |");
+        System.out.println("|              " + res + "                    |");
+        System.out.println("|                                       |");
+        System.out.println("========================================");
+
+        List<UserView> users = userService.search(firstName, lastName);
+        return ResponseEntity.ok(users);
     }
 }

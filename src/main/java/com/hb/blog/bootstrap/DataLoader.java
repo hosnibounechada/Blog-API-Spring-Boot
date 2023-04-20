@@ -30,8 +30,8 @@ public class DataLoader implements CommandLineRunner {
 
     public void loadUsers() {
 
-        User hosni = new User("Hosni", "Bounechada", 28, "hosni@gmail.com", "azerty");
-        User mohammed = new User("Mohammed", "Bounab", 26, "mohammed@gmail.com", "azerty");
+        User hosni = new User("hosni", "bounechada", 28, "hosni@gmail.com", "azerty");
+        User mohammed = new User("mohammed", "bounab", 26, "mohammed@gmail.com", "azerty");
 
         List<Post> posts = List.of(
                 new Post(1L, "First Hosni Post", hosni),
