@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile("dev")
+@Profile({"dev", "local"})
 public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PostRepository postRepository;

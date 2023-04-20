@@ -6,6 +6,7 @@ import com.hb.blog.error.ErrorResponse;
 import com.hb.blog.exception.*;
 import com.hb.blog.payload.response.BadRequestErrorResponse;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
 
 @RestControllerAdvice
+@Hidden
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
