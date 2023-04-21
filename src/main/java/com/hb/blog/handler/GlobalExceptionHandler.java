@@ -7,6 +7,7 @@ import com.hb.blog.exception.*;
 import com.hb.blog.payload.response.BadRequestErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,37 +31,37 @@ import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleException(NotFoundException e) {
+    public ErrorResponse handleNotFoundException(NotFoundException e) {
         return new ErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(GoneException.class)
     @ResponseStatus(HttpStatus.GONE)
-    public ErrorResponse handleException(GoneException e) {
+    public ErrorResponse handleGoneException(GoneException e) {
         return new ErrorResponse(e.getMessage(), HttpStatus.GONE);
     }
 
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleException(ConflictException e) {
+    public ErrorResponse handleConflictException(ConflictException e) {
         return new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ObjectNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public BadRequestErrorResponse handleException(ObjectNotValidException e) {
+    public BadRequestErrorResponse handleObjectNotValidException(ObjectNotValidException e) {
         return new BadRequestErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), e.getErrors());
     }
 
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleException(ResourceAlreadyExistsException e) {
+    public ErrorResponse handleEResourceAlreadyExistsException(ResourceAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public BadRequestErrorResponse handleException(MethodArgumentNotValidException e) {
+    public BadRequestErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         List<ErrorModel> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -69,9 +70,22 @@ public class GlobalExceptionHandler {
 
         return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
     }
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BadRequestErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
+       List<ErrorModel> errors = new ArrayList<>();
+        var violations = e.getConstraintViolations();
+        violations.forEach(violation -> {
+            String errorMessage = violation.getMessage();
+            String invalidValue = violation.getInvalidValue().toString();
+            String parameterName = violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1);
+            errors.add(new ErrorModel(parameterName, invalidValue, errorMessage));
+        });
+       return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
+    }
 
     @ExceptionHandler(SQLException.class)
-    public ResponseEntity<?> databaseHandlerException(SQLException e) {
+    public ResponseEntity<?> handleSQLException(SQLException e) {
         switch (e.getSQLState()) {
             case DatabaseErrorCode.DUPLICATED -> {
                 List<ErrorModel> errors = new ArrayList<>();

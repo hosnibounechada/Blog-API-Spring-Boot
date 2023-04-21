@@ -16,8 +16,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +29,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(name = "user", description = "the user API")
-public class UserController implements IController<Long, CreateUserRequest, UpdateUserRequest, UserResponse> {
+@Validated
+public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -43,7 +48,7 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
         StringLowerCaseEditor lowerCaseEditor = new StringLowerCaseEditor();
         dataBinder.registerCustomEditor( String.class, lowerCaseEditor );
     }*/
-    @Override
+
     @GetMapping("/all")
     public ResponseEntity<PageResponse<UserResponse>> getAll() {
         PageResponse<UserResponse> pageResponse = userService.getAll();
@@ -51,7 +56,6 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
         return ResponseEntity.ok(pageResponse);
     }
 
-    @Override
     @GetMapping
     public ResponseEntity<PageResponse<UserResponse>> getByPages(@RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "10") int size,
@@ -63,10 +67,12 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
     @ApiResponse(description = "successful operation", responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))})
     @ApiResponse(description = "failed operation", responseCode = "404", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     @GetMapping("/{id}")
-    @Override
     public ResponseEntity<UserResponse> getById(
             @Parameter(name = "id", example = "1")
-            @PathVariable
+            @PathVariable("id")
+            @Digits(integer = 3, fraction = 0, message = "must be number")
+            @Min(value = 0,message = "must be at minimum 0")
+            @Max(value = 999,message = "must be less than 1000")
             Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
@@ -77,8 +83,7 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
             @ApiResponse(description = "failed operation (Bad Request)", responseCode = "400", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestErrorResponse.class))}),
     })
     @PostMapping(consumes = {"application/json"})
-    @Override
-    public ResponseEntity<UserResponse> create(@RequestBody @Valid CreateUserRequest request) {
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.create(request));
     }
 
@@ -89,12 +94,12 @@ public class UserController implements IController<Long, CreateUserRequest, Upda
             @ApiResponse(description = "failed operation (User Not Found)", responseCode = "404", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PutMapping("/{id}")
-    @Override
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody @Valid UpdateUserRequest request) {
+    public ResponseEntity<UserResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(userService.update(id, request));
     }
 
-    @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 //        userService.delete(id);
