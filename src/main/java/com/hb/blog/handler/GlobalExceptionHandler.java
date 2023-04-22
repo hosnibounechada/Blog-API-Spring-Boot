@@ -8,8 +8,10 @@ import com.hb.blog.payload.response.BadRequestErrorResponse;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
+import static com.hb.blog.util.StringUtils.toSnakeCase;
 
 @RestControllerAdvice
 @Hidden
@@ -65,11 +67,20 @@ public class GlobalExceptionHandler {
         List<ErrorModel> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(err -> new ErrorModel(camelCaseToSnakeCase(err.getField()), Objects.requireNonNull(err.getRejectedValue()).toString(), Objects.requireNonNull(err.getDefaultMessage())))
+                .map(err -> new ErrorModel(toSnakeCase(err.getField()), Objects.requireNonNull(err.getRejectedValue()).toString(), Objects.requireNonNull(err.getDefaultMessage())))
                 .collect(Collectors.toList());
 
         return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
     }
+    @ExceptionHandler(PropertyReferenceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public BadRequestErrorResponse handleMethodArgumentNotValidException(PropertyReferenceException e) {
+        ErrorModel errorModel = new ErrorModel(e.getPropertyName(),e.getPropertyName(),e.getMessage());
+        List<ErrorModel> errors = new ArrayList<>();
+        errors.add(errorModel);
+        return new BadRequestErrorResponse("Parameters validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public BadRequestErrorResponse handleConstraintViolationException(ConstraintViolationException e) {
@@ -78,10 +89,15 @@ public class GlobalExceptionHandler {
         violations.forEach(violation -> {
             String errorMessage = violation.getMessage();
             String invalidValue = violation.getInvalidValue().toString();
-            String parameterName = camelCaseToSnakeCase(violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1));
+            String parameterName = toSnakeCase(violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1));
             errors.add(new ErrorModel(parameterName, invalidValue, errorMessage));
         });
        return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
+    }
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public ErrorResponse handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e){
+        return new ErrorResponse(e.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(SQLException.class)
