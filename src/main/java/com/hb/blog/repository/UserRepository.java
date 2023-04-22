@@ -2,7 +2,10 @@ package com.hb.blog.repository;
 
 import com.hb.blog.model.User;
 import com.hb.blog.view.UserView;
+import com.hb.blog.view.UserViewImp;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "delete from User u where u.id = :id")
     Integer deleteUserById(@Param("id") Long id);
 
-    List<UserView> getUserByFirstNameOrLastName(String firstName, String lastName);
+    List<UserView> getUserByFirstNameOrLastNameOrderByFirstNameAscLastNameAsc(String firstName, String lastName);
+    Page<UserViewImp> getUserByFirstNameOrLastName(String firstName, String lastName, Pageable pageable);
 }

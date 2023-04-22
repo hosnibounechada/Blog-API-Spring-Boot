@@ -2,6 +2,8 @@ package com.hb.blog.payload.response.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static com.hb.blog.util.StringUtils.*;
+
 public record UserResponse(Long id,
                            @JsonProperty("first_name")
                            String firstName,
@@ -11,12 +13,12 @@ public record UserResponse(Long id,
                            String email) {
     @Override
     public String firstName() {
-        return firstName.substring(0,1).toUpperCase()+firstName.substring(1);
+        return upperCaseFirstLetter(firstName);
     }
 
     @Override
     public String lastName() {
-        return lastName.substring(0,1).toUpperCase()+lastName.substring(1);
+        return upperCaseFirstLetter(lastName);
     }
 
     @Override

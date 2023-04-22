@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.hb.blog.util.StringUtils.upperCaseFirstLetter;
+
 @Entity(name = "User")
 @Table(
         name = "users",
@@ -116,7 +118,6 @@ public class User {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
     public String getLastName() {
         return lastName;
     }

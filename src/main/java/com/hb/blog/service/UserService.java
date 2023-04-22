@@ -8,9 +8,10 @@ import com.hb.blog.annotation.CustomAnnotation;
 import com.hb.blog.exception.GoneException;
 import com.hb.blog.mapper.UserMapper;
 import com.hb.blog.payload.response.user.UserResponse;
-import com.hb.blog.payload.response.user.PageResponse;
-import com.hb.blog.util.Pagination;
+import com.hb.blog.payload.response.PageResponse;
+import com.hb.blog.util.StringUtils;
 import com.hb.blog.view.UserView;
+import com.hb.blog.view.UserViewImp;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +23,12 @@ import com.hb.blog.payload.request.user.UpdateUserRequest;
 import com.hb.blog.repository.UserRepository;
 import com.hb.blog.util.UpdateObject;
 
-import static com.hb.blog.validator.ObjectValidator.*;
+import static com.hb.blog.util.PaginationUtils.generatePageableResponse;
+import static com.hb.blog.util.StringUtils.*;
 
 
 @Service
-public class UserService implements IService<Long, CreateUserRequest, UpdateUserRequest, UserResponse>{
+public class UserService implements IService<Long, CreateUserRequest, UpdateUserRequest, UserResponse> {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -34,6 +36,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
         this.userRepository = userRepository;
         this.userMapper = userMapper;
     }
+
     @Override
     public PageResponse<UserResponse> getAll() {
         List<User> users = userRepository.findAll();
@@ -42,16 +45,18 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
         int count = usersList.size();
 
-        return new PageResponse<>(0,count, count > 0 ? 1 : 0, count, usersList);
+        return new PageResponse<>(0, count, count > 0 ? 1 : 0, count, usersList);
     }
+
     @Override
-    public PageResponse<UserResponse> getByPages(int pageNumber, int pageSize, String sortBy, String direction){
+    public PageResponse<UserResponse> getByPages(int pageNumber, int pageSize, String sortBy, String direction) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
         Page<User> pageUsers = userRepository.findAll(pageable);
 
-        return Pagination.generateResponse(pageUsers, userMapper);
+        return generatePageableResponse(pageUsers, userMapper);
     }
+
     @Override
     @CustomAnnotation
     public UserResponse getById(Long id) {
@@ -59,6 +64,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
         return userMapper.entityToResponse(user);
     }
+
     @Override
     public UserResponse create(CreateUserRequest request) {
         /*validate(request);*/
@@ -67,6 +73,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
         return userMapper.entityToResponse(userRepository.save(user));
     }
+
     @Override
     public UserResponse update(Long id, UpdateUserRequest request) {
         Optional<User> existedUser = userRepository.findById(id);
@@ -92,6 +99,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
 
         if (userRepository.existsById(id)) throw new ConflictException("Couldn't delete user!");
     }
+
     @Override
     public void delete(Long id) {
         int count = userRepository.deleteUserById(id);
@@ -99,7 +107,20 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
         if (count != 1) throw new GoneException("User already deleted!");
     }
 
-    public List<UserView> search(String firstName, String lastName){
-        return userRepository.getUserByFirstNameOrLastName(firstName, lastName);
+    public PageResponse<UserViewImp> search(
+            String firstName,
+            String lastName,
+            int pageNumber,
+            int pageSize,
+            String[] sortBy,
+            String direction) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.fromString(direction),sortBy));
+
+
+//        return userRepository.getUserByFirstNameOrLastNameOrderByFirstNameAscLastNameAsc(firstName, lastName);
+
+        Page<UserViewImp> page = userRepository.getUserByFirstNameOrLastName(firstName, lastName, pageable);
+
+        return generatePageableResponse(page);
     }
 }
