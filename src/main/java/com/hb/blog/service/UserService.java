@@ -61,7 +61,7 @@ public class UserService implements IService<Long, CreateUserRequest, UpdateUser
     }
     @Override
     public UserResponse create(CreateUserRequest request) {
-        validate(request);
+        /*validate(request);*/
 
         User user = userMapper.requestToEntity(request);
 

@@ -1,5 +1,6 @@
 package com.hb.blog.controller;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.hb.blog.error.ErrorResponse;
 import com.hb.blog.payload.request.user.CreateUserRequest;
 import com.hb.blog.payload.request.user.UpdateUserRequest;
@@ -7,6 +8,7 @@ import com.hb.blog.payload.response.BadRequestErrorResponse;
 import com.hb.blog.payload.response.user.UserResponse;
 import com.hb.blog.payload.response.user.PageResponse;
 import com.hb.blog.service.UserService;
+import com.hb.blog.util.StringLowerCaseEditor;
 import com.hb.blog.view.UserView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +24,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,7 +45,7 @@ public class UserController {
      *
      * @return String
      */
-    /* @InitBinder
+    /*@InitBinder
     public void initBinder( WebDataBinder dataBinder )
     {
         StringLowerCaseEditor lowerCaseEditor = new StringLowerCaseEditor();
@@ -108,12 +111,24 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    // In order to camelCase Form-data we can follow many techniques:
+    // 1- Use @InitBuilder
+    // 2- Use @RequestParam(value = "snake_case", defaultValue = "")
+    // 3- Use Filter
+    // Interceptor and Aspect will be checked later
+    // In the Search case we can lower case values or let database ignore case
     @GetMapping("/search")
-    public ResponseEntity<List<UserView>> search(@RequestParam(defaultValue = "") String firstName,
-                                                 @RequestParam(defaultValue = "") String lastName, String res) {
+    public ResponseEntity<List<UserView>> search(
+//            @RequestParam(value = "first_name", defaultValue = "")
+            @RequestParam
+            String firstName,
+//            @RequestParam(value = "last_name", defaultValue = "")
+            @RequestParam
+            String lastName,
+            String res) {
         System.out.println("========================================");
         System.out.println("|                                       |");
-        System.out.println("|              " + res + "                    |");
+        System.out.println("|              " + lastName + "                    |");
         System.out.println("|                                       |");
         System.out.println("========================================");
 

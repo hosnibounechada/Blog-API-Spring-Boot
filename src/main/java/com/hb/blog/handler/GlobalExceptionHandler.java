@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         violations.forEach(violation -> {
             String errorMessage = violation.getMessage();
             String invalidValue = violation.getInvalidValue().toString();
-            String parameterName = violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1);
+            String parameterName = camelCaseToSnakeCase(violation.getPropertyPath().toString().substring(violation.getPropertyPath().toString().indexOf(".") + 1));
             errors.add(new ErrorModel(parameterName, invalidValue, errorMessage));
         });
        return new BadRequestErrorResponse("Validation failed", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.toString(), errors);
