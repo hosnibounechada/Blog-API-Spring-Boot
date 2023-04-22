@@ -1,6 +1,6 @@
 package com.hb.blog.controller;
 
-import com.hb.blog.payload.response.user.PageResponse;
+import com.hb.blog.payload.response.PageResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface IController<ID, CREATE, UPDATE, RESPONSE> {

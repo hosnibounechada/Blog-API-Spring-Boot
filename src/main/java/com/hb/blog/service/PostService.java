@@ -9,10 +9,10 @@ import com.hb.blog.model.User;
 import com.hb.blog.payload.request.post.CreatePostRequest;
 import com.hb.blog.payload.request.post.UpdatePostRequest;
 import com.hb.blog.payload.response.post.PostResponse;
-import com.hb.blog.payload.response.user.PageResponse;
+import com.hb.blog.payload.response.PageResponse;
 import com.hb.blog.repository.PostRepository;
 import com.hb.blog.repository.UserRepository;
-import com.hb.blog.util.Pagination;
+import com.hb.blog.util.PaginationUtils;
 import com.hb.blog.util.UpdateObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,7 +53,7 @@ public class PostService implements IService<Long, CreatePostRequest, UpdatePost
 
         Page<Post> pageUsers = postRepository.findAll(pageable);
 
-        return Pagination.generateResponse(pageUsers, postMapper);
+        return PaginationUtils.generatePageableResponse(pageUsers, postMapper);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.hb.blog.payload.response.user;
+package com.hb.blog.payload.response;
 
 import java.util.List;
 

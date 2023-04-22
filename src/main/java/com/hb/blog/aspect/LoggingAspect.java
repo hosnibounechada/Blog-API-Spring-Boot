@@ -1,7 +1,17 @@
 package com.hb.blog.aspect;
 
+import com.hb.blog.payload.request.user.CreateUserRequest;
+import com.hb.blog.payload.response.user.UserResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Arrays;
 
 @Aspect
 @Component
@@ -9,25 +19,21 @@ public class LoggingAspect {
     /**
      *This AOP allow to execute Advice on package and its classes and methods
      */
-    /*@Pointcut("execution(* com.hb.blog.controller.*.*(..))")
+    @Pointcut("execution(* com.hb.blog.controller.*.*(..))")
     public void loggingPointCut() {
     }
 
     @Before("loggingPointCut()")
     public void before(JoinPoint joinPoint) {
-        System.out.println("========Before Evey Methode Invoke in Controllers ==========");
-        System.out.println(joinPoint.getSignature());
-        System.out.println("============================================================");
+        System.out.println("====Before Evey Methode Invoke in Controllers ====>" + joinPoint.getSignature());
     }
 
     @After("loggingPointCut()")
     public void after(JoinPoint joinPoint) {
-        System.out.println("========After Every Methode Invoke in Controllers ==========");
-        System.out.println(joinPoint.getSignature());
-        System.out.println("============================================================");
+        System.out.println("====After Every Methode Invoke in Controllers ====>" + joinPoint.getSignature());
     }
 
-    @Before("execution(* com.hb.blog.controller.UserController.create(..))" +
+    /*@Before("execution(* com.hb.blog.controller.UserController.create(..))" +
             "&& args(requestBody,..)")
     public void printRequestBody(JoinPoint joinPoint, Object requestBody) {
         if (requestBody instanceof CreateUserRequest request) {
@@ -108,19 +114,18 @@ public class LoggingAspect {
         }
     }*/
 
-    /*@Around("execution(* com.hb.blog.controller.UserController.search(..))")
+/*    @Around("execution(* com.hb.blog.controller.UserController.search(..))")
     public Object convertToLowerCase(ProceedingJoinPoint joinPoint) throws Throwable {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        if (firstName != null) {
-            firstName = firstName.toLowerCase();
-            request.setAttribute("firstName", "firstName");
-        }
-        if (lastName != null) {
-            lastName = lastName.toLowerCase();
-            request.setAttribute("lastName", "lastName");
-        }
+
+        String firstName = request.getParameter("first_name");
+        String lastName = request.getParameter("last_name");
+
+        if (firstName != null) request.setAttribute("firstName", firstName.toLowerCase());
+        if (lastName != null) request.setAttribute("lastName", lastName.toLowerCase());
+
         return joinPoint.proceed();
     }*/
+
+    // Lower Case the values of form data before it reach the search controller
 }

@@ -3,7 +3,7 @@ package com.hb.blog.controller;
 import com.hb.blog.payload.request.post.CreatePostRequest;
 import com.hb.blog.payload.request.post.UpdatePostRequest;
 import com.hb.blog.payload.response.post.PostResponse;
-import com.hb.blog.payload.response.user.PageResponse;
+import com.hb.blog.payload.response.PageResponse;
 import com.hb.blog.service.PostService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;

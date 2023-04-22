@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.hb.blog.util.Converter.camelCaseToSnakeCase;
+import static com.hb.blog.util.StringUtils.toSnakeCase;
 
 public class ObjectValidator {
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -25,7 +25,7 @@ public class ObjectValidator {
         if (!validations.isEmpty()) {
             List<ErrorModel> errors = validations
                     .stream()
-                    .map(error -> new ErrorModel(camelCaseToSnakeCase(error.getPropertyPath().toString()), error.getInvalidValue().toString(), error.getMessage()))
+                    .map(error -> new ErrorModel(toSnakeCase(error.getPropertyPath().toString()), error.getInvalidValue().toString(), error.getMessage()))
                     .collect(Collectors.toList());
             throw new ObjectNotValidException("Validation failed", errors);
         }

@@ -3,13 +3,14 @@ package com.hb.blog.filter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+import static com.hb.blog.util.StringUtils.*;
+
+//@Component
 public class SnakeToCamelCaseFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -48,29 +49,5 @@ public class SnakeToCamelCaseFilter implements Filter {
         };
 
         chain.doFilter(requestWrapper, response);
-    }
-
-    private String toCamelCase(String snakeCase) {
-        StringBuilder camelCase = new StringBuilder();
-        boolean capitalizeNext = false;
-        for (int i = 0; i < snakeCase.length(); i++) {
-            char c = snakeCase.charAt(i);
-            if (c == '_') {
-                capitalizeNext = true;
-            } else if (capitalizeNext) {
-                camelCase.append(Character.toUpperCase(c));
-                capitalizeNext = false;
-            } else {
-                camelCase.append(c);
-            }
-        }
-        return camelCase.toString();
-    }
-    private String[] toLowerCase(String[] values){
-        String[] convertedValues = new String[values.length];
-        for (int i = 0; i < values.length; i++) {
-            convertedValues[i] = values[i].toLowerCase();
-        }
-        return convertedValues;
     }
 }

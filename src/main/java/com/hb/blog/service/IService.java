@@ -1,6 +1,6 @@
 package com.hb.blog.service;
 
-import com.hb.blog.payload.response.user.PageResponse;
+import com.hb.blog.payload.response.PageResponse;
 
 public interface IService<ID, CREATE, UPDATE, RESPONSE> {
     PageResponse<RESPONSE> getAll();
