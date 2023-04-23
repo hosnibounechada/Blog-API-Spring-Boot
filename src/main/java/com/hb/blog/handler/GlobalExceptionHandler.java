@@ -100,6 +100,9 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(e.getMessage(), HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    // Handling this exception is based on the Database provider
+    // This exception handler is meant to handle exceptions thrown by the database provider, specifically PostgreSQL
+    // Any other database provider will cause the exception to response with Unknown field and value and message
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<?> handleSQLException(SQLException e) {
         switch (e.getSQLState()) {

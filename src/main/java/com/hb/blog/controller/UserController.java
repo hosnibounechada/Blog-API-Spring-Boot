@@ -1,14 +1,16 @@
 package com.hb.blog.controller;
 
 import com.hb.blog.error.ErrorResponse;
+import com.hb.blog.model.Post;
+import com.hb.blog.model.User;
 import com.hb.blog.payload.request.user.CreateUserRequest;
 import com.hb.blog.payload.request.user.UpdateUserRequest;
 import com.hb.blog.payload.response.BadRequestErrorResponse;
 import com.hb.blog.payload.response.user.UserResponse;
 import com.hb.blog.payload.response.PageResponse;
+import com.hb.blog.repository.UserRepository;
 import com.hb.blog.service.UserService;
-import com.hb.blog.util.StringUtils;
-import com.hb.blog.view.UserView;
+import com.hb.blog.view.PostView;
 import com.hb.blog.view.UserViewImp;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,6 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+import java.util.Set;
+
 import static com.hb.blog.util.StringUtils.toCamelCase;
 
 @RestController
@@ -34,9 +39,11 @@ import static com.hb.blog.util.StringUtils.toCamelCase;
 @Validated
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -122,8 +129,23 @@ public class UserController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             @RequestParam(value = "sort_by", defaultValue = "firstName, lastName") String[] sortBy,
-            @RequestParam(value = "direction",defaultValue = "asc") String direction) {
+            @RequestParam(value = "direction", defaultValue = "asc") String direction) {
         PageResponse<UserViewImp> response = userService.search(firstName.toLowerCase(), lastName.toLowerCase(), page, size, toCamelCase(sortBy), direction);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id:\\d+}/posts")
+    public ResponseEntity<PageResponse<PostView>> getUserPosts(
+            @PathVariable Long id,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "sort_by", defaultValue = "id") String[] sortBy,
+            @RequestParam(value = "direction", defaultValue = "asc") String direction) {
+        return ResponseEntity.ok(userService.getUserPosts(id, page, size, toCamelCase(sortBy), direction));
+    }
+
+    @GetMapping("/posts/{userId:\\d+}")
+    public ResponseEntity<User> getUsersPosts(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getUsersPosts(userId));
     }
 }
